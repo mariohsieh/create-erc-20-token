@@ -7,27 +7,35 @@ import { SampleToken } from "../src/sample-token.sol";
 
 contract SampleTokenTest is Test {
   SampleToken public sampleToken;
-  DeploySampleToken public deployer;
 
-  address albert = makeAddr("alpha");
-  address betty = makeAddr("betty");
+  address private constant ALBERT = address(uint160(uint256(keccak256("albert"))));
+  address private constant BETTY  = address(uint160(uint256(keccak256("betty"))));
 
   uint256 public constant STARTING_BALANCE = 100 ether;
 
+  address private tokenOwner;
+
   function setUp() public {
-    deployer = new DeploySampleToken();
+    DeploySampleToken deployer = new DeploySampleToken();
     sampleToken = deployer.run();
+    tokenOwner = msg.sender;
   }
 
   function testAlbertBalance() public {
-    vm.prank(msg.sender);
-    sampleToken.transfer(albert, STARTING_BALANCE);
-    assertEq(STARTING_BALANCE, sampleToken.balanceOf(albert));
+    _assertBalanceAfterTransfer(ALBERT);
   }
 
   function testBettyBalance() public {
-    vm.prank(msg.sender);
-    sampleToken.transfer(betty, STARTING_BALANCE);
-    assertEq(STARTING_BALANCE, sampleToken.balanceOf(betty));
+    _assertBalanceAfterTransfer(BETTY);
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+
+  /// @dev Pranks as the token owner, transfers STARTING_BALANCE to `recipient`,
+  ///      and asserts the recipient's resulting balance.
+  function _assertBalanceAfterTransfer(address recipient) private {
+    vm.prank(tokenOwner);
+    sampleToken.transfer(recipient, STARTING_BALANCE);
+    assertEq(sampleToken.balanceOf(recipient), STARTING_BALANCE);
   }
 }
