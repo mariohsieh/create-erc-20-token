@@ -8,8 +8,8 @@ import { SampleToken } from "../src/sample-token.sol";
 contract SampleTokenTest is Test {
   SampleToken public sampleToken;
 
-  address private constant ALBERT = address(uint160(uint256(keccak256("albert"))));
-  address private constant BETTY  = address(uint160(uint256(keccak256("betty"))));
+  address private ALBERT = makeAddr("ALBERT");
+  address private BETTY = makeAddr("betty");
 
   uint256 public constant STARTING_BALANCE = 100 ether;
 
